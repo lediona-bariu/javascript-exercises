@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 // Lesson 08 exercise: Classes
 // In your exercise repository, create a branch named `lesson-08-exercise` and switch to it,
@@ -10,6 +10,27 @@
 // runtime, and a `describe` method that returns one sentence built from the instance's own
 // properties through `this`. Create two instances with `new` and log both descriptions.
 
+class Artist {
+  constructor(name, genre, totalRuntime) {
+    this.name = name;
+    this.genre = genre;
+    this.totalRuntime = totalRuntime;
+  }
+
+  describe() {
+    return `${this.name}, ${this.genre}, ${this.totalRuntime} of music`;
+  }
+}
+
+const artistOne = new Artist("Asake", "Afrobeats", "14:08");
+const artistTwo = new Artist("Johnny Cash", "Country", "15:40");
+
+console.log(artistOne.describe());
+console.log(artistTwo.describe());
+
+// Ledi: Results:
+// Asake, Afrobeats, 14:08 of music
+// Johnny Cash, Country, 15:40 of music
 
 // TODO: Part two.
 // The file provides the artists as an array of plain objects. Loop over it with `for...of`,
@@ -25,6 +46,24 @@ const artistData = [
   { name: "Johnny Cash", genre: "Country", total: "15:40" },
 ];
 
+const artists = [];
+
+for (const artist of artistData) {
+  const artistInstance = new Artist(artist.name, artist.genre, artist.total);
+
+  artists.push(artistInstance);
+}
+
+for (const artist of artists) {
+  console.log(artist.describe());
+}
+
+// Ledi: Results:
+// Pinkfong, Children's music, 11:31 of music
+// Adriano Celentano, Italian pop, 20:52 of music
+// Asake, Afrobeats, 14:08 of music
+// Miyagi and Andy Panda, Hip-hop, 16:21 of music
+// Johnny Cash, Country, 15:40 of music
 
 // TODO: Part three.
 // The file contains three short snippets: a class call that is missing `new`, an arrow
@@ -41,12 +80,39 @@ const artistData = [
 // * Snippet three, the correct call. Uncomment after part one:
 // console.log(new Artist("Asake", "Afrobeats", "14:08").describe());
 
+// Ledi: Snippet one Prediction: TypeError because a class cannot be called without new.
+// Actual: TypeError - Class constructor Artist cannot be invoked without 'new'.
+// Ledi: Snippet two Prediction: "undefined by undefined" because the arrow function does not get `this` from the single object.
+// Actual: undefined by undefined
+// Ledi: Snippet three Prediction: This works because correctly creates an instance
+// Actual: Asake, Afrobeats, 14:08 of music
 
 // TODO: Part four.
 // Write a `FeaturedArtist` class that extends `Artist`, adds a blurb property through a
 // constructor that calls `super` first, and overrides `describe` so that it builds on the
 // superclass version through `super.describe()`. Promote one artist and log the result.
 
+class FeaturedArtist extends Artist {
+  constructor(name, genre, totalRuntime, blurb) {
+    super(name, genre, totalRuntime);
+    this.blurb = blurb;
+  }
+
+  describe() {
+    return `${super.describe()} Featured: ${this.blurb}`;
+  }
+}
+
+const featuredArtist = new FeaturedArtist(
+  "Johnny Cash",
+  "Country",
+  "15:40",
+  "A legendary voice in country music.",
+);
+
+console.log(featuredArtist.describe());
+
+// Ledi: Result: Johnny Cash, Country, 15:40 of music Featured: A legendary voice in country music.
 
 // TODO: Part five.
 // The file ends with a constructor function and two prototype method assignments, working code
@@ -55,17 +121,33 @@ const artistData = [
 // class.
 
 // * Working pre-2015 code, provided. Do not rewrite it, annotate it:
+
+// Ledi: Equivalent to a class constructor: constructor(name, genre) { ... }
 function ArtistOld(name, genre) {
+  // Ledi: Equivalent to properties assigned inside a class constructor.
   this.name = name;
   this.genre = genre;
 }
+
+// Ledi: Equivalent to the class method: describe() { ... }
 ArtistOld.prototype.describe = function () {
   return `${this.name}, ${this.genre}`;
 };
+
+// Ledi: Equivalent to the class method: tag() { ... }
 ArtistOld.prototype.tag = function () {
   return `#${this.genre.toLowerCase().replaceAll(" ", "-").replaceAll("'", "")}`;
 };
 
+// Ledi: Testing the old constructor and prototype methods.
+const oldArtist = new ArtistOld("Johnny Cash", "Country");
+
+console.log(oldArtist.describe());
+console.log(oldArtist.tag());
+
+// Ledi: Results:
+// Johnny Cash, Country
+// #country
 
 // TODO: Part six.
 // As a stretch, add a static method `Artist.named` that receives an array of instances and a
@@ -73,6 +155,15 @@ ArtistOld.prototype.tag = function () {
 // it returns. The `get` keyword from the extension is your alternative if getters caught your
 // interest.
 
+Artist.named = function (instances, name) {
+  return instances.find((artist) => artist.name === name);
+};
+
+const foundArtist = Artist.named(artists, "Johnny Cash");
+
+console.log(foundArtist.describe());
+
+// Ledi: Result: Johnny Cash, Country, 15:40 of music
 
 // TODO: Save deliberately, commit with a clear message, push the branch, and open a pull request
 // into main.
